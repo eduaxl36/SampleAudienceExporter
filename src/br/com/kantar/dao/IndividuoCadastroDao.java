@@ -6,14 +6,17 @@ package br.com.kantar.dao;
 
 import br.com.kantar.model.DomicilioCadastro;
 import br.com.kantar.model.IndividuoCadastro;
+import br.com.kantar.model.PAISES;
 import br.com.kantar.model.Regiao;
 import static br.com.kantar.util.BothUtil.recuperarDataArquivo;
 import static br.com.kantar.util.CadastroUtil.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -21,9 +24,22 @@ import java.util.List;
  */
 public class IndividuoCadastroDao {
 
+    private File ArquivoCadastro;
+    private PAISES Pais;
+
+    public IndividuoCadastroDao() {
+    }
+
+    public IndividuoCadastroDao(File ArquivoCadastro, PAISES Pais) {
+     
+        
+        this.ArquivoCadastro = ArquivoCadastro;
+        this.Pais = Pais;
+    }
+
     private IndividuoCadastro retornaObjetoIndividuoCadastro(String[] PrimeiraLinha, String[] LinhasSubjacentes, LocalDate DataArquivo, boolean isJefe) {
 
-        DomicilioCadastro DomCadastro = new DomicilioCadastro(Integer.parseInt(PrimeiraLinha[0]), DataArquivo, new Regiao(1, "ARGENTINA GBA"));
+        DomicilioCadastro DomCadastro = new DomicilioCadastro(Integer.parseInt(PrimeiraLinha[0]), DataArquivo, new Regiao(Pais.getCodigo(), Pais.getDescricaoPais()));
         IndividuoCadastro IndCadastro
                 = new IndividuoCadastro(
                         Integer.parseInt(LinhasSubjacentes[38]),
@@ -35,13 +51,14 @@ public class IndividuoCadastroDao {
         return IndCadastro;
     }
 
-    public List<IndividuoCadastro> ObterInformacoesCadastraisIndividuais(File ArquivoCadastro) throws IOException {
+    public List<IndividuoCadastro> ObterInformacoesCadastraisIndividuais() throws IOException {
 
+        
         List<IndividuoCadastro> ValoresIndividuos = new ArrayList();
 
-        LocalDate DataArquivo = recuperarDataArquivo(ArquivoCadastro);
+        LocalDate DataArquivo = recuperarDataArquivo(this.ArquivoCadastro);
 
-        StringBuilder CadastroModificado = incluiPontosInterrupcao(ArquivoCadastro);
+        StringBuilder CadastroModificado = incluiPontosInterrupcao(this.ArquivoCadastro);
 
         String[] ValoresCadastroAgregados = efetuaDivisaoPorDom(CadastroModificado);
 
@@ -83,38 +100,34 @@ public class IndividuoCadastroDao {
         }
         return ValoresIndividuos;
     }
-    
-    
-    public static void main(String[] args) throws IOException {
-        
- 
-        List<IndividuoCadastro> vals = new IndividuoCadastroDao().ObterInformacoesCadastraisIndividuais(new File("c:/teste/20220511.txt"));
 
-        
-        vals.forEach(x->{
-        
- System.out.println
-        
-        (
-         
-         x.getDomilicio().getData()+";"
-        +x.getDomilicio().getRegiao().getCodRegiao()+";"
-        +x.getDomilicio().getId()+";"
-        +x.getIndividuoId()+";"
-        +x.getIndividuoIdade()+";"
-        +x.getIndividuoSexo()+";"
-        +x.isValidaSeChefe()
-        
- 
-       );
-          
-        
-        });
-        
-        
-        
+    public void printData() throws IOException {
+
+        List<IndividuoCadastro> Individuos = new IndividuoCadastroDao(this.ArquivoCadastro,this.Pais).ObterInformacoesCadastraisIndividuais();
+        try (PrintWriter Gravador = new PrintWriter("tempOutFiles/IndividuoCadastro.csv")) {
+            Individuos.forEach(x -> {
                 
+                Gravador.println(
+                        x.getDomilicio().getData() + ";"
+                                + x.getDomilicio().getRegiao().getCodRegiao() + ";"
+                                + x.getDomilicio().getId() + ";"
+                                + x.getIndividuoId() + ";"
+                                + x.getIndividuoIdade() + ";"
+                                + x.getIndividuoSexo() + ";"
+                                + x.isValidaSeChefe()
+                );
+                
+            });
+        }
+
     }
-    
-    
+
+    public static void main(String[] args) throws IOException {
+
+      IndividuoCadastroDao d = new IndividuoCadastroDao(new File("in/20220515.txt"),PAISES.ARGENTINA_GBA);
+
+       d.printData();
+
+    }
+
 }

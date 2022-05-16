@@ -46,7 +46,7 @@ public abstract class Individuo {
 
     @Override
     public int hashCode() {
-        int hash = 7;
+        int hash = 5;
         hash = 67 * hash + this.IndividuoId;
         hash = 67 * hash + Objects.hashCode(this.Domilicio);
         return hash;
@@ -67,8 +67,13 @@ public abstract class Individuo {
         if (this.IndividuoId != other.IndividuoId) {
             return false;
         }
-        return Objects.equals(this.Domilicio, other.Domilicio);
+        if (!Objects.equals(this.Domilicio, other.Domilicio)) {
+            return false;
+        }
+        return true;
     }
+
+  
 
     
     

@@ -13,6 +13,7 @@ import static br.com.kantar.util.CadastroUtil.incluiPontosInterrupcao;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -26,11 +27,11 @@ public class DomicilioCadastroDao {
 
     DomicilioCadastro DomCadastro;
     Set ConjuntoDons = new HashSet();
-    PAISES pais;
+    PAISES Pais;
     private File ArquivoCadastro;
 
-    public DomicilioCadastroDao(PAISES pais, File ArquivoCadastro) {
-        this.pais = pais;
+    public DomicilioCadastroDao(PAISES Pais, File ArquivoCadastro) {
+        this.Pais = Pais;
         this.ArquivoCadastro = ArquivoCadastro;
     }
 
@@ -136,28 +137,40 @@ public class DomicilioCadastroDao {
         return ValoresDons;
     }
 
+    public void printData() throws IOException{
+    
+        Set<DomicilioCadastro> x = new DomicilioCadastroDao(this.Pais,this.ArquivoCadastro).ObterInformacoesCadastraisIndividuais();
+        try (PrintWriter Gravador = new PrintWriter("tempOutFiles/DomCadastro.csv")) {
+            for (DomicilioCadastro d : x) {
+                
+                Gravador.println(
+                        d.getData()
+                                + ";" + d.getRegiao().getCodRegiao()
+                                + ";" + d.getId() + ";"
+                                + d.getQuantidadeIndivudos() + ";"
+                                + d.getQuantidadeTelevisores() + ";"
+                                + d.getIdadeChefe() + ";"
+                                + d.getNse() + ";"
+                                + d.getCaboOperador() + ";"
+                                + d.isCable() + ";"
+                                + d.isFaixaIdadeCrianca12_17() + ";"
+                                + d.isFaixaIdadeCrianca4_11() + ";"
+                                + d.isTemCrianca()
+                );
+                
+            }
+        }
+    
+    
+    }
+    
+    
+    
     public static void main(String[] args) throws IOException {
 
-        Set<DomicilioCadastro> x = new DomicilioCadastroDao(PAISES.ARGENTINA_GBA,new File("c:/teste/20220511.txt")).ObterInformacoesCadastraisIndividuais();
-
-        for (DomicilioCadastro d : x) {
-
-            System.out.println(
-                    d.getData()
-                    + ";" + d.getRegiao().getCodRegiao()
-                    + ";" + d.getId() + ";"
-                    + d.getQuantidadeIndivudos() + ";"
-                    + d.getQuantidadeTelevisores() + ";"
-                    + d.getIdadeChefe() + ";"
-                    + d.getNse() + ";"
-                    + d.getCaboOperador() + ";"
-                    + d.isCable() + ";"
-                    + d.isFaixaIdadeCrianca12_17() + ";"
-                    + d.isFaixaIdadeCrianca4_11() + ";"
-                    + d.isTemCrianca()
-            );
-
-        }
+      
+        DomicilioCadastroDao d = new DomicilioCadastroDao(PAISES.ARGENTINA_GBA,new File("in//20220515.txt"));
+        d.printData();
 
     }
 

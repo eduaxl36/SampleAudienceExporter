@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -23,70 +24,61 @@ import java.util.regex.Pattern;
  * @author Eduardo.Fernando
  */
 public class DomicilioMetDao {
+
+    private final File ArquivoMet;
     
-    private File ArquivoMet;
     private DomicilioMet Dom;
-    private PAISES Pais;
-    
-    
-    public DomicilioMetDao(File ArquivoMet,PAISES Pais) {
+    private final PAISES Pais;
 
-    this.ArquivoMet = ArquivoMet;
-    this.Pais = Pais;
+    private final String RegexDom = "I.*";
+    private final String RegexPeso = "W.*";
     
+
+    public DomicilioMetDao(File ArquivoMet, PAISES Pais) {
+
+        this.ArquivoMet = ArquivoMet;
+        this.Pais = Pais;
+
     }
-    
-      public long obterDomicilio(String ExpressaoIndividual){
-    
-    
-           Matcher RegexPegarDomicilio = Pattern.compile("I.*").matcher(ExpressaoIndividual);
-           if(RegexPegarDomicilio.find())
-           {
-               
-           return Long.parseLong(RegexPegarDomicilio.group().substring(1,9));
-           
-           }
-    
-    return 0;
-    
+
+    public long obterDomicilio(String ExpressaoIndividual) {
+
+        Matcher RegexPegarDomicilio = Pattern.compile(RegexDom).matcher(ExpressaoIndividual);
+        if (RegexPegarDomicilio.find()) {
+
+            return Long.parseLong(RegexPegarDomicilio.group().substring(1, 9));
+
+        }
+
+        return 0;
+
     }
-   
-    
 
- 
-            public float obterPeso(String ExpressaoIndividual){
-    
-    
-           Matcher RegexPegarPeso = Pattern.compile("W.*").matcher(ExpressaoIndividual);
-           if(RegexPegarPeso.find())    
-           {
-           
-                return Float.parseFloat(RegexPegarPeso.group().replaceAll("W", ""));
-           
-           }
-                 
-    
-    return 0;
-    
-    }  
-      
-      
-    public String obterDemografica(String ExpressaoIndividual){
-    
-    
-           Matcher RegexPegarDemografica = Pattern.compile("D.*").matcher(ExpressaoIndividual);
-           
-           if(RegexPegarDemografica.find())    
-           {
-           
-               return RegexPegarDemografica.group().replaceAll("D,", "").replaceAll("\\,", ";");
+    public float obterPeso(String ExpressaoIndividual) {
 
+        Matcher RegexPegarPeso = Pattern.compile(RegexPeso).matcher(ExpressaoIndividual);
+        if (RegexPegarPeso.find()) {
 
-           }
-    return null;
-    }        
-            
-    
+            return Float.parseFloat(RegexPegarPeso.group().replaceAll("W", ""));
+
+        }
+
+        return 0;
+
+    }
+
+    public String obterDemografica(String ExpressaoIndividual) {
+
+        Matcher RegexPegarDemografica = Pattern.compile("D.*").matcher(ExpressaoIndividual);
+
+        if (RegexPegarDemografica.find()) {
+
+            return RegexPegarDemografica.group().replaceAll("D,", "").replaceAll("\\,", ";");
+
+        }
+        return null;
+    }
+
     public StringBuilder angariarDadosDomiciliares() throws IOException {
 
         StringBuilder Acumulador = new StringBuilder();
@@ -106,81 +98,64 @@ public class DomicilioMetDao {
 
         return Acumulador;
     }
-    
-    
-    
-       public DomicilioMet obterDadoDomiciliar(String ExpressaoIndividual){
-       
-       
 
-                       Dom = new DomicilioMet(
-                               
-                               obterPeso(ExpressaoIndividual),
-                               obterDemografica(ExpressaoIndividual),
-                               obterDomicilio(ExpressaoIndividual),
-                               recuperarDataArquivo(this.ArquivoMet),
-                               new Regiao(Pais.getCodigo(),Pais.getDescricaoPais())
-                               
-                                );
-                       
-              
-           return Dom;
- 
-       }
-       
-       
-       
-       
-       
-       
-         public List<DomicilioMet>ObterInformacoesMetDomiciliares() throws IOException{
-    
-            
-        List<DomicilioMet>Dons = new ArrayList();  
-            
-        String[]DomiciliaresAngariados = angariarDadosDomiciliares().toString().split("_");
-    
-        
-        for(String Dom:DomiciliaresAngariados){
-        
-         if(!Dom.contains("0.00")){
-         
-         
-               Dons.add(obterDadoDomiciliar(Dom));
-         
-         }
-        
-        }
-        
-        
-    
-    return Dons;
-    
+    public DomicilioMet obterDadoDomiciliar(String ExpressaoIndividual) {
+
+        Dom = new DomicilioMet(
+                obterPeso(ExpressaoIndividual),
+                obterDemografica(ExpressaoIndividual),
+                obterDomicilio(ExpressaoIndividual),
+                recuperarDataArquivo(this.ArquivoMet),
+                new Regiao(Pais.getCodigo(), Pais.getDescricaoPais())
+        );
+
+        return Dom;
+
     }
-         
-         
-     
-         
-    
+
+    public List<DomicilioMet> ObterInformacoesMetDomiciliares() throws IOException {
+
+        List<DomicilioMet> Dons = new ArrayList();
+
+        String[] DomiciliaresAngariados = angariarDadosDomiciliares().toString().split("_");
+
+        for (String Dom : DomiciliaresAngariados) {
+
+            if (!Dom.contains("0.00")) {
+
+                Dons.add(obterDadoDomiciliar(Dom));
+
+            }
+
+        }
+
+        return Dons;
+
+    }
+
+    public void printData() throws IOException {
+
+        List<DomicilioMet> Domicilios = new DomicilioMetDao(this.ArquivoMet, this.Pais).ObterInformacoesMetDomiciliares();
+
+        Domicilios.removeIf(Dom -> Dom.getVariaveis() == null);
+
+        try ( PrintWriter Gravador = new PrintWriter("tempOutFiles/DomicilioMet.csv")) {
+            for (DomicilioMet Dom : Domicilios) {
+
+                Gravador.println(Dom.getData() + ";" + Dom.getRegiao().getCodRegiao() + ";" + Dom.getId() + ";" + Dom.getPeso() + ";" + Dom.getVariaveis());
+
+            }
+        }
+
+    }
+
     
     public static void main(String[] args) throws IOException {
         
+        new DomicilioMetDao(new File("in/20220515.MET"), PAISES.ARGENTINA_GBA).printData();
         
-       List<DomicilioMet>d=   new DomicilioMetDao(new File("c:/teste/20220512.MET"),PAISES.ARGENTINA_GBA).ObterInformacoesMetDomiciliares();
-       
-       d.removeIf(x->x.getVariaveis()==null);
-       
-       for(DomicilioMet x:d){
-       
-       
-           System.out.println(x.getData()+";"+x.getRegiao().getCodRegiao()+";"+x.getId()+";"+x.getPeso()+";"+x.getVariaveis());
-       
-       }
-       
-
-       
+        
     }
     
-  
     
 }

@@ -10,10 +10,14 @@ import br.com.kantar.model.Regiao;
 import static br.com.kantar.util.BothUtil.recuperarDataArquivo;
 import br.com.kantar.util.MetUtil;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
@@ -147,17 +151,17 @@ public class IndividuoMetDao {
     
      
     
-        public List<IndividuoMet>ObterInformacoesMetIndividuais() throws IOException{
+        public Set<IndividuoMet>ObterInformacoesMetIndividuais() throws IOException{
     
             
-        List<IndividuoMet>Individuos = new ArrayList();  
+        Set<IndividuoMet>Individuos = new LinkedHashSet();  
             
         String[]IndividuosAngariados = angariarDadosIndividuais().toString().split("_");
     
         
         for(String Individuo:IndividuosAngariados){
         
-         if(!Individuo.contains("0.00")){
+         if(!Individuo.contains("W0.00")){
          
      
     
@@ -178,33 +182,36 @@ public class IndividuoMetDao {
     }
     
     
+        
+    public void printData() throws FileNotFoundException, IOException{
+    
+       Set<IndividuoMet> Individuos= new IndividuoMetDao(this.ArquivoMet).ObterInformacoesMetIndividuais();
+        try (PrintWriter Gravador = new PrintWriter("tempOutFiles/IndividuoMet.csv")) {
+            Individuos.forEach(Individuo -> {
+                Gravador.println(
+                        
+                        
+                        Individuo.getDomilicio().getData()+";"+
+                                Individuo.getDomilicio().getRegiao().getCodRegiao()+";"+
+                                Individuo.getDomilicio().getId()+";"+
+                                Individuo.getIndividuoId()+";"+
+                                Individuo.getIndividuoPeso()+";"+
+                                Individuo.getIndividuoVariaveis()
+                        
+                        
+                        
+                );
+            });
+        }
+       
+    }    
+        
     
     public static void main(String[] args) throws IOException {
         
-        
-        List<IndividuoMet> ss= new IndividuoMetDao(new File("c:/teste/20220512.MET")).ObterInformacoesMetIndividuais();
+       new IndividuoMetDao(new File("in/20220515.MET")).printData();
         
       
-        
-        for(IndividuoMet x:ss){
-        
-        
-            System.out.println(
-                    
-                    
-                    x.getDomilicio().getData()+";"+
-                    x.getDomilicio().getRegiao().getCodRegiao()+";"+
-                    x.getDomilicio().getId()+";"+
-                    x.getIndividuoId()+";"+
-                    x.getIndividuoPeso()+";"+
-                    x.getIndividuoVariaveis()
-            
-            
-            
-            );
-        
-        
-        }
         
     }
             

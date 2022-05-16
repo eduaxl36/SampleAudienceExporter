@@ -48,9 +48,9 @@ public class IndividuoMet extends Individuo {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 67 * hash + Float.floatToIntBits(this.IndividuoPeso);
-        hash = 67 * hash + Objects.hashCode(this.IndividuoVariaveis);
+        int hash = 7;
+        hash = 41 * hash + Float.floatToIntBits(this.IndividuoPeso);
+        hash = 41 * hash + Objects.hashCode(this.IndividuoVariaveis);
         return hash;
     }
 
@@ -69,8 +69,12 @@ public class IndividuoMet extends Individuo {
         if (Float.floatToIntBits(this.IndividuoPeso) != Float.floatToIntBits(other.IndividuoPeso)) {
             return false;
         }
-        return Objects.equals(this.IndividuoVariaveis, other.IndividuoVariaveis);
+        if (!Objects.equals(this.IndividuoVariaveis, other.IndividuoVariaveis)) {
+            return false;
+        }
+        return true;
     }
+
     
     
     
