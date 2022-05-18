@@ -2,13 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package br.com.kantar.dao;
+package br.com.kantar.dao.infra;
 
 import br.com.kantar.dao.variaveis.VariaveisIndividuaisDao;
-import br.com.kantar.model.DomicilioMet;
-import br.com.kantar.model.IndividuoMet;
+import br.com.kantar.model.infra.DomicilioMet;
+import br.com.kantar.model.infra.IndividuoMet;
 import br.com.kantar.enums.PAISES;
-import br.com.kantar.model.Regiao;
+import br.com.kantar.model.infra.Regiao;
 import static br.com.kantar.util.BothUtil.recuperarDataArquivo;
 import br.com.kantar.util.MetUtil;
 import java.io.File;

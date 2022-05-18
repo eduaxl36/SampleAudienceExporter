@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package br.com.kantar.model;
+package br.com.kantar.model.infra;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -19,7 +19,7 @@ public class DomicilioMet extends Domicilio {
     public DomicilioMet() {
     }
 
-    public DomicilioMet(long Id, LocalDate Data, br.com.kantar.model.Regiao Regiao) {
+    public DomicilioMet(long Id, LocalDate Data, br.com.kantar.model.infra.Regiao Regiao) {
         super(Id, Data, Regiao);
     }
 
@@ -30,7 +30,7 @@ public class DomicilioMet extends Domicilio {
         this.Variaveis = Variaveis;
     }
 
-    public DomicilioMet(float Peso, String Variaveis, long Id, LocalDate Data, br.com.kantar.model.Regiao Regiao) {
+    public DomicilioMet(float Peso, String Variaveis, long Id, LocalDate Data, br.com.kantar.model.infra.Regiao Regiao) {
         super(Id, Data, Regiao);
         this.Peso = Peso;
         this.Variaveis = Variaveis;

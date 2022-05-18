@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package br.com.kantar.dao;
+package br.com.kantar.dao.infra;
 
-import br.com.kantar.model.DomicilioCadastro;
+import br.com.kantar.model.infra.DomicilioCadastro;
 import br.com.kantar.enums.PAISES;
-import br.com.kantar.model.Regiao;
+import br.com.kantar.model.infra.Regiao;
 import static br.com.kantar.util.BothUtil.recuperarDataArquivo;
 import static br.com.kantar.util.CadastroUtil.efetuaDivisaoPorDom;
 import static br.com.kantar.util.CadastroUtil.incluiPontosInterrupcao;
@@ -14,6 +14,10 @@ import static br.com.kantar.util.CadastroUtil.incluiPontosInterrupcao;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -28,14 +32,61 @@ public class DomicilioCadastroDao {
     DomicilioCadastro DomCadastro;
     Set ConjuntoDons = new HashSet();
     PAISES Pais;
-    private File ArquivoCadastro;
+    private final File ArquivoCadastro;
+    private final Connection ConexaoBaseDeDados;
 
-    public DomicilioCadastroDao(PAISES Pais, File ArquivoCadastro) {
+    public DomicilioCadastroDao(PAISES Pais, File ArquivoCadastro) throws Exception {
+        
         this.Pais = Pais;
         this.ArquivoCadastro = ArquivoCadastro;
+        ConexaoBaseDeDados = new br.com.kantar.connectionFactory.Connection().getConnection();
+        
     }
 
 
+    public boolean checarPermissividadeInsercao() throws SQLException{
+    
+        
+        
+        
+        PreparedStatement ps = this.ConexaoBaseDeDados.prepareStatement("select * from \"domicilioCadastro\" where codregion=? and fecha=?");
+        
+        java.sql.Date DataProdSQLConverted = java.sql.Date.valueOf( recuperarDataArquivo(this.ArquivoCadastro) );
+        
+        ps.setInt(1, this.Pais.getCodigo());
+        ps.setDate(2,DataProdSQLConverted);
+        ResultSet rs = ps.executeQuery();
+        
+        if(!rs.next()){
+        
+            return true;
+        
+        }
+        
+        return false;
+        
+    }
+    
+    
+    public void gravarDadosMassivos() throws SQLException{
+
+        
+        if(checarPermissividadeInsercao()){
+        
+        PreparedStatement PreparacaoConexao=  
+        this.ConexaoBaseDeDados.prepareStatement
+        ("copy \"domicilioCadastro\" "
+     + "(fecha,codregion,hogarid,\"personaCounter\",\"tvCounter\",\"edadJefe\",nse,\"cableOperator\",nino12_17,nino_4_11,tienenino) "
+      + "FROM 'c:\\temp\\DomCadastro.csv' DELIMITER ';' CSV;");
+        PreparacaoConexao.executeUpdate(); 
+        
+        }
+
+         
+
+    
+    }
+    
     
     private boolean valida4_11(String[] PrimeiraLinha) {
 
@@ -137,7 +188,7 @@ public class DomicilioCadastroDao {
         return ValoresDons;
     }
 
-    public void printData() throws IOException{
+    public void printData() throws IOException, Exception{
     
         Set<DomicilioCadastro> x = new DomicilioCadastroDao(this.Pais,this.ArquivoCadastro).ObterInformacoesCadastraisIndividuais();
         try (PrintWriter Gravador = new PrintWriter("tempOutFiles/DomCadastro.csv")) {
@@ -152,10 +203,10 @@ public class DomicilioCadastroDao {
                                 + d.getIdadeChefe() + ";"
                                 + d.getNse() + ";"
                                 + d.getCaboOperador() + ";"
-                                + d.isCable() + ";"
                                 + d.isFaixaIdadeCrianca12_17() + ";"
                                 + d.isFaixaIdadeCrianca4_11() + ";"
                                 + d.isTemCrianca()
+                                + d.isCable() + ";"
                 );
                 
             }
@@ -166,11 +217,13 @@ public class DomicilioCadastroDao {
     
     
     
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, Exception {
 
       
-        DomicilioCadastroDao d = new DomicilioCadastroDao(PAISES.ARGENTINA_GBA,new File("in/20220514.txt"));
-        d.printData();
+        DomicilioCadastroDao d = new DomicilioCadastroDao(PAISES.ARGENTINA_GBA,new File("in/20220517.txt"));
+       // d.printData();
+
+        d.gravarDadosMassivos();
 
     }
 

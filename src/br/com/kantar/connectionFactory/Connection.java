@@ -18,10 +18,10 @@ public class Connection {
  
  private java.sql.Connection Connection;
     
- private java.sql.Connection getConnection() throws Exception{
+ public java.sql.Connection getConnection() throws Exception{
      
  Class.forName("org.postgresql.Driver");
- String url ="jdbc:postgresql://10.2.0.40:5475/DeliveryLatam";
+ String url ="jdbc:postgresql://10.2.0.40:5475/SampleLatam";
  String usuario="postgres";
  String senha = "kimpad";
  

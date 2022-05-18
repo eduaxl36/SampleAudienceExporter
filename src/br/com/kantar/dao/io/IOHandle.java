@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package br.com.kantar.dao;
+package br.com.kantar.dao.io;
 
 import br.com.kantar.enums.PAISES;
 import br.com.kantar.enums.SAIDAS;

@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package br.com.kantar.model;
+package br.com.kantar.model.infra;
 
 import java.time.LocalDate;
 
@@ -38,7 +38,7 @@ private int CaboOperador;
         this.CaboOperador = CaboOperador;
     }
 
-    public DomicilioCadastro(int Nse, boolean Cable, int QuantidadeTelevisores, int QuantidadeIndivudos, int IdadeChefe, boolean TemCrianca, boolean FaixaIdadeCrianca4_11, boolean FaixaIdadeCrianca12_17, int CaboOperador, long Id, LocalDate Data, br.com.kantar.model.Regiao Regiao) {
+    public DomicilioCadastro(int Nse, boolean Cable, int QuantidadeTelevisores, int QuantidadeIndivudos, int IdadeChefe, boolean TemCrianca, boolean FaixaIdadeCrianca4_11, boolean FaixaIdadeCrianca12_17, int CaboOperador, long Id, LocalDate Data, br.com.kantar.model.infra.Regiao Regiao) {
         super(Id, Data, Regiao);
         this.Nse = Nse;
         this.Cable = Cable;
@@ -51,7 +51,7 @@ private int CaboOperador;
         this.CaboOperador = CaboOperador;
     }
 
-    public DomicilioCadastro(long Id, LocalDate Data, br.com.kantar.model.Regiao Regiao) {
+    public DomicilioCadastro(long Id, LocalDate Data, br.com.kantar.model.infra.Regiao Regiao) {
         super(Id, Data, Regiao);
     }
 
