@@ -6,7 +6,7 @@ package br.com.kantar.dao;
 
 import br.com.kantar.model.DomicilioCadastro;
 import br.com.kantar.model.IndividuoCadastro;
-import br.com.kantar.model.PAISES;
+import br.com.kantar.enums.PAISES;
 import br.com.kantar.model.Regiao;
 import static br.com.kantar.util.BothUtil.recuperarDataArquivo;
 import static br.com.kantar.util.CadastroUtil.*;
@@ -124,7 +124,7 @@ public class IndividuoCadastroDao {
 
     public static void main(String[] args) throws IOException {
 
-      IndividuoCadastroDao d = new IndividuoCadastroDao(new File("in/20220515.txt"),PAISES.ARGENTINA_GBA);
+      IndividuoCadastroDao d = new IndividuoCadastroDao(new File("in/20220514.txt"),PAISES.ARGENTINA_GBA);
 
        d.printData();
 

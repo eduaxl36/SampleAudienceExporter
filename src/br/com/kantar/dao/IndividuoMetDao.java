@@ -4,8 +4,10 @@
  */
 package br.com.kantar.dao;
 
+import br.com.kantar.dao.variaveis.VariaveisIndividuaisDao;
 import br.com.kantar.model.DomicilioMet;
 import br.com.kantar.model.IndividuoMet;
+import br.com.kantar.enums.PAISES;
 import br.com.kantar.model.Regiao;
 import static br.com.kantar.util.BothUtil.recuperarDataArquivo;
 import br.com.kantar.util.MetUtil;
@@ -15,12 +17,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -30,14 +29,15 @@ public class IndividuoMetDao {
 
     private File ArquivoMet;
     private IndividuoMet Individuo;
+    private PAISES Pais;
+    private VariaveisIndividuaisDao VariavelIndividual;
+
     
-    
-    public IndividuoMetDao(File ArquivoMet) {
-    
+    public IndividuoMetDao(File ArquivoMet, PAISES Pais) {
         this.ArquivoMet = ArquivoMet;
-        
+        this.Pais = Pais;
     }
-  
+    
     
     public long obterDomicilio(String ExpressaoIndividual){
     
@@ -87,16 +87,68 @@ public class IndividuoMetDao {
     
     }  
       
+   public String converteObjetoVariavelToString(String Variaveis){
+   
+   VariavelIndividual = new VariaveisIndividuaisDao(Variaveis);
+   
+
+   String H_PROVINCIA = ""+VariavelIndividual.ObterVariveisIndividuais().getH_PROVINCIA();
+   String H_CIUDAD = ""+VariavelIndividual.ObterVariveisIndividuais().getH_CIUDAD();
+   String H_PARTIDO = ""+VariavelIndividual.ObterVariveisIndividuais().getH_PARTIDO();        
+   String H_PLAZA = ""+VariavelIndividual.ObterVariveisIndividuais().getH_PLAZA();        
+   String I_NSE_AGRUP = ""+VariavelIndividual.ObterVariveisIndividuais().getI_NSE_AGRUP();        
+   String I_NSE_DESAGREG = ""+VariavelIndividual.ObterVariveisIndividuais().getI_NSE_DESAGREG();        
+   String I_CABLE = ""+VariavelIndividual.ObterVariveisIndividuais().getI_CABLE();        
+   String H_NSE_INT = ""+VariavelIndividual.ObterVariveisIndividuais().getH_NSE_INT();        
+   String I_COD_IND = ""+VariavelIndividual.ObterVariveisIndividuais().getI_COD_IND();        
+   String I_SEXO = ""+VariavelIndividual.ObterVariveisIndividuais().getI_SEXO();
+   String I_EDAD = ""+VariavelIndividual.ObterVariveisIndividuais().getI_EDAD();
+   String I_EDAD_DESAGR = ""+VariavelIndividual.ObterVariveisIndividuais().getI_EDAD_DESAGR();
+   String I_JEFE = ""+VariavelIndividual.ObterVariveisIndividuais().getI_JEFE();
+   String I_AMA = ""+VariavelIndividual.ObterVariveisIndividuais().getI_AMA();
+   String I_POS_FAMIL = ""+VariavelIndividual.ObterVariveisIndividuais().getI_POS_FAMIL();
+   String I_AMA_C_NIÑOS_0_2 = ""+VariavelIndividual.ObterVariveisIndividuais().getI_AMA_C_NIÑOS_0_2();
+   String I_AMA_C_NIÑOS_3_5 = ""+VariavelIndividual.ObterVariveisIndividuais().getI_AMA_C_NIÑOS_3_5();
+   String I_EDAD_INT = ""+VariavelIndividual.ObterVariveisIndividuais().getI_EDAD_INT();
+   String I_EDAD_GRILLA_2 = ""+VariavelIndividual.ObterVariveisIndividuais().getI_EDAD_GRILLA_2();
+
+   
+   return 
+           
+   H_PROVINCIA+";"+
+   H_CIUDAD+";"+      
+   H_PARTIDO+";"+
+   H_PLAZA+";"+
+   I_NSE_AGRUP+";"+        
+   I_NSE_DESAGREG+";"+
+   I_CABLE+";"+         
+   H_NSE_INT+";"+         
+   I_COD_IND+";"+        
+   I_SEXO+";"+        
+   I_EDAD+";"+        
+   I_EDAD_DESAGR+";"+        
+   I_JEFE+";"+
+   I_AMA+";"+        
+   I_POS_FAMIL+";"+        
+   I_AMA_C_NIÑOS_0_2+";"+         
+   I_AMA_C_NIÑOS_3_5+";"+        
+   I_EDAD_INT+";"+
+   I_EDAD_GRILLA_2        ;
+   
+   }         
+            
+            
+            
       
     public String obterDemografica(String ExpressaoIndividual){
     
-    
+           
            Matcher RegexPegarDemografica = Pattern.compile("D.*").matcher(ExpressaoIndividual);
            
            if(RegexPegarDemografica.find())    
            {
-           
-               return RegexPegarDemografica.group().replaceAll("D,", "").replaceAll("\\,", ";");
+           VariavelIndividual = new VariaveisIndividuaisDao("");
+               return converteObjetoVariavelToString(RegexPegarDemografica.group().replaceAll("D,", "").replaceAll("\\,", ";"));
 
 
            }
@@ -151,10 +203,10 @@ public class IndividuoMetDao {
     
      
     
-        public Set<IndividuoMet>ObterInformacoesMetIndividuais() throws IOException{
+        public List<IndividuoMet>ObterInformacoesMetIndividuais() throws IOException{
     
             
-        Set<IndividuoMet>Individuos = new LinkedHashSet();  
+        List<IndividuoMet>Individuos = new ArrayList();  
             
         String[]IndividuosAngariados = angariarDadosIndividuais().toString().split("_");
     
@@ -176,18 +228,21 @@ public class IndividuoMetDao {
         }
         
         
-    
+    Individuos.remove(Individuos.size()-1);
     return Individuos;
     
     }
     
     
+   public void printData() throws FileNotFoundException, IOException{
+   
+   
+       List<IndividuoMet> Individuos= new IndividuoMetDao(this.ArquivoMet,this.Pais).ObterInformacoesMetIndividuais();
         
-    public void printData() throws FileNotFoundException, IOException{
-    
-       Set<IndividuoMet> Individuos= new IndividuoMetDao(this.ArquivoMet).ObterInformacoesMetIndividuais();
         try (PrintWriter Gravador = new PrintWriter("tempOutFiles/IndividuoMet.csv")) {
-            Individuos.forEach(Individuo -> {
+            for(IndividuoMet Individuo:Individuos){
+                
+                
                 Gravador.println(
                         
                         
@@ -201,16 +256,19 @@ public class IndividuoMetDao {
                         
                         
                 );
-            });
+                
+                
+            }
         }
-       
-    }    
+   
+   
+   } 
         
-    
+        
+        
     public static void main(String[] args) throws IOException {
         
-       new IndividuoMetDao(new File("in/20220515.MET")).printData();
-        
+        new IndividuoMetDao(new File("in/20220514.MET"),PAISES.ARGENTINA_GBA).printData();
       
         
     }
